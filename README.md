@@ -28,9 +28,13 @@ Even though the Pi Agent session itself runs on the host machine, it is complete
 *(Currently skipped in favor of external manual/CI merging)*
 Historically, this phase merged approved branches back to `main`.
 
+## About This Repo
+
+This is [Heucles](https://github.com/Heucles)' personal, customized setup of [Sandcastle](https://github.com/mattpocock/sandcastle) — Matt Pocock's automated agent orchestration harness. It was extracted from a private monorepo where it drives an AI-agent migration loop (Notion-tracked issues → Docker sandboxes → implement/review agents), and is maintained here as a standalone harness that anyone can adapt to their own repo.
+
 ## Differences from Matt Pocock's Original Sandcastle
 
-This repository uses a customized version of Sandcastle with several key differences from the original `@ai-hero/sandcastle` implementation:
+This repository uses a customized version of Sandcastle with several key differences from the original [`@ai-hero/sandcastle`](https://github.com/mattpocock/sandcastle) implementation:
 
 1. **Pi SDK Integration**: Instead of using Sandcastle's built-in agent drivers (e.g., `sandcastle.claudeCode`), this version orchestrates the agents using the `@earendil-works/pi-coding-agent` (Pi) SDK natively.
 2. **Custom Docker Tools**: Because Pi handles its own tool execution, we wrap Sandcastle's `sandbox.exec()` API in custom Pi tools (`sandbox_bash`, `sandbox_read`, `sandbox_write`, `sandbox_edit`) to ensure the agent interacts exclusively with the isolated container.

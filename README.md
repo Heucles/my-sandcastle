@@ -34,7 +34,7 @@ This is [Heucles](https://github.com/Heucles)' personal, customized setup of [Sa
 
 ## Differences from Matt Pocock's Original Sandcastle
 
-This repository uses a customized version of Sandcastle with several key differences from the original [`@ai-hero/sandcastle`](https://github.com/mattpocock/sandcastle) implementation:
+This repository uses a customized version of Sandcastle with some key differences from the original [`@ai-hero/sandcastle`](https://github.com/mattpocock/sandcastle) implementation:
 
 1. **Pi SDK Integration**: Instead of using Sandcastle's built-in agent drivers (e.g., `sandcastle.claudeCode`), this version orchestrates the agents using the `@earendil-works/pi-coding-agent` (Pi) SDK natively.
 2. **Custom Docker Tools**: Because Pi handles its own tool execution, we wrap Sandcastle's `sandbox.exec()` API in custom Pi tools (`sandbox_bash`, `sandbox_read`, `sandbox_write`, `sandbox_edit`) to ensure the agent interacts exclusively with the isolated container.

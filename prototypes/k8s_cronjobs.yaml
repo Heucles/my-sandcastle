@@ -1,0 +1,97 @@
+# Namespace definition
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: app-crons
+
+---
+# 1. context-personal: advisorTasksClean
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: context-personal-advisor-tasks-clean
+  namespace: app-crons
+spec:
+  # Schedule: Every midnight (adjust as needed from legacy CloudWatch)
+  schedule: "0 0 * * *" 
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: job-container
+            image: reinvent-finance/context-personal:latest
+            command: ["node", "jobs/advisor/advisorTasksClean.js"]
+            envFrom:
+            - secretRef:
+                name: context-personal-secrets
+          restartPolicy: OnFailure
+
+---
+# 2. context-personal: updateDelayedGoals
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: context-personal-update-delayed-goals
+  namespace: app-crons
+spec:
+  # Schedule: Every midnight (adjust as needed)
+  schedule: "0 0 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: job-container
+            image: reinvent-finance/context-personal:latest
+            command: ["node", "jobs/investor/updateDelayedGoals.js"]
+            envFrom:
+            - secretRef:
+                name: context-personal-secrets
+          restartPolicy: OnFailure
+
+---
+# 3. context-portfolio: cronProcessesAssetsResultsAnnouncements
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: context-portfolio-assets-results
+  namespace: app-crons
+spec:
+  # Schedule: 10:00 AM UTC (from legacy documentation: cron(0 10 * * ? *))
+  schedule: "0 10 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: job-container
+            image: reinvent-finance/context-portfolio:latest
+            command: ["node", "jobs/cronProcessesAssetsResultsAnnouncements.js"]
+            envFrom:
+            - secretRef:
+                name: context-portfolio-secrets
+          restartPolicy: OnFailure
+
+---
+# 4. reports: startReportProcess
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: reports-start-report-process
+  namespace: app-crons
+spec:
+  # Schedule: Run on the 1st of every month at midnight (assumed default, adjust as needed)
+  schedule: "0 0 1 * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: job-container
+            image: reinvent-finance/reports:latest
+            command: ["node", "jobs/reports/startReportProcess.js"]
+            envFrom:
+            - secretRef:
+                name: reports-secrets
+          restartPolicy: OnFailure

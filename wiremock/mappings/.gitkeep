@@ -1,0 +1,2 @@
+# This directory holds JSON stub files for WireMock.
+# The volume is mounted to /home/wiremock/mappings in the docker-compose stack.

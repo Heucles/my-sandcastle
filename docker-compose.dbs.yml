@@ -1,0 +1,78 @@
+# Shared test databases for the Reinvent migration program.
+#
+# - postgres: the migration TARGET. Agents create per-issue databases/schemas
+#             (issue_<num>).
+#
+# State persists across runs in named volumes. Full reset (wipes everything):
+#   docker compose -f .sandcastle/docker-compose.dbs.yml down -v
+#
+# Start:
+#   docker compose -f .sandcastle/docker-compose.dbs.yml up -d
+#
+# Sandboxes attach to the `reinvent-dbs` network (main.mts: docker({network}))
+# and reach the services as postgres:5432.
+
+name: reinvent-dbs
+
+services:
+  postgres:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: reinvent-pg
+    ports:
+      - "5432:5432"   # host access for DB clients (postgres/reinvent-pg)
+    volumes:
+      - reinvent-pg-data:/var/lib/postgresql/data
+    networks: [reinvent-dbs]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    restart: unless-stopped
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks: [reinvent-dbs]
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:7
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks: [reinvent-dbs]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  wiremock:
+    image: wiremock/wiremock:latest
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./.sandcastle/wiremock/mappings:/home/wiremock/mappings
+    networks: [reinvent-dbs]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/__admin/mappings"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  reinvent-pg-data:
+
+networks:
+  reinvent-dbs:
+    name: reinvent-dbs

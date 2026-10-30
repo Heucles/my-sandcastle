@@ -32,6 +32,10 @@ Historically, this phase merged approved branches back to `main`.
 
 This is [Heucles](https://github.com/Heucles)' personal, customized setup of [Sandcastle](https://github.com/mattpocock/sandcastle) — Matt Pocock's automated agent orchestration harness. It was extracted from a private monorepo where it drives an AI-agent migration loop (Notion-tracked issues → Docker sandboxes → implement/review agents), and is maintained here as a standalone harness that anyone can adapt to their own repo.
 
+This setup is focused on running the [Pi agent](https://github.com/earendil-works/pi) (`@earendil-works/pi-coding-agent`) inside a custom Docker sandbox, rather than Sandcastle's built-in agent drivers.
+
+**Known issue — subagents:** spawning subagents is currently not supported, because Pi does not have a native subagent tool. This is a known limitation and I intend to address it in the near future.
+
 ## Differences from Matt Pocock's Original Sandcastle
 
 This repository uses a customized version of Sandcastle with some key differences from the original [`@ai-hero/sandcastle`](https://github.com/mattpocock/sandcastle) implementation:
